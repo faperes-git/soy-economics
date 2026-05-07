@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sack Calculation — Brazilian Soybean Economics</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer=window.dataLayer||[];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js',new Date()); gtag('config','G-XXXXXXXXXX');
+</script>
+<style>
+:root{
+  --dark:#063036; --dark2:#135A5C; --teal:#08B19E;
+  --cream:#F7F2DE; --gold:#FAE2A6; --red:#E74C3C;
+  --muted:#4a8a8c; --dim:#b0d0d2; --border:rgba(8,177,158,0.18);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--dark);color:var(--cream);line-height:1.7;-webkit-font-smoothing:antialiased;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(6,48,54,0.97);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:0 48px;height:64px;display:flex;align-items:center;justify-content:space-between;}
+.nav-brand{display:flex;align-items:center;gap:14px;}
+.nav-brand img{width:38px;height:38px;border-radius:2px;}
+.nav-brand span{font-size:12px;font-weight:700;letter-spacing:3px;color:var(--teal);text-transform:uppercase;}
+.nav-links{display:flex;gap:28px;list-style:none;}
+.nav-links a{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--muted);text-decoration:none;text-transform:uppercase;transition:color .2s;}
+.nav-links a:hover{color:var(--teal);}
+@media(max-width:680px){.nav-links{display:none;}.nav-brand span{display:none;}}
+
+/* SECTIONS */
+section{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:100px 64px 80px;position:relative;}
+@media(max-width:768px){section{padding:90px 28px 64px;}}
+.inner{max-width:960px;margin:0 auto;width:100%;}
+
+/* EYEBROW */
+.eyebrow{display:flex;align-items:center;gap:16px;font-size:11px;font-weight:700;letter-spacing:4px;color:var(--teal);text-transform:uppercase;margin-bottom:40px;}
+.eyebrow::before{content:'';display:block;width:40px;height:2px;background:var(--teal);flex-shrink:0;}
+
+/* REVEAL */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease;}
+.reveal.visible{opacity:1;transform:none;}
+
+/* ══ HERO ══ */
+#hero{background:var(--dark);overflow:hidden;}
+#hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 75% 40%,rgba(8,177,158,0.07) 0%,transparent 65%);pointer-events:none;}
+
+.hero-tag{font-size:11px;font-weight:700;letter-spacing:4px;color:var(--teal);text-transform:uppercase;margin-bottom:48px;display:flex;align-items:center;gap:16px;}
+.hero-tag::before{content:'';display:block;width:40px;height:2px;background:var(--teal);}
+
+.eq-block{margin-bottom:48px;}
+.eq-row{display:flex;align-items:baseline;gap:16px;margin-bottom:4px;flex-wrap:wrap;}
+.eq-label{font-size:13px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;width:100px;flex-shrink:0;}
+.eq-number{font-size:clamp(80px,14vw,136px);font-weight:900;line-height:1;color:var(--cream);}
+.eq-number.red{color:var(--red);}
+.eq-unit{font-size:16px;font-weight:400;color:var(--muted);letter-spacing:1px;align-self:flex-end;padding-bottom:14px;}
+.eq-divider{width:260px;height:2px;background:rgba(8,177,158,0.2);margin:16px 0;}
+
+.hero-verdict{font-size:clamp(22px,3.5vw,34px);font-weight:300;font-style:italic;color:var(--gold);margin-bottom:20px;}
+.hero-sub{font-size:17px;font-weight:300;color:var(--dim);max-width:580px;line-height:1.85;}
+.scroll-hint{position:absolute;bottom:36px;left:64px;display:flex;align-items:center;gap:14px;font-size:11px;font-weight:600;letter-spacing:3px;color:rgba(74,138,140,0.6);text-transform:uppercase;animation:bob 2.2s ease-in-out infinite;}
+.scroll-hint::before{content:'';display:block;width:32px;height:1px;background:currentColor;}
+@keyframes bob{0%,100%{transform:translateY(0);}50%{transform:translateY(5px);}}
+@media(max-width:480px){.scroll-hint{left:28px;}}
+
+/* ══ COSTS ══ */
+#costs{background:var(--dark);border-top:1px solid var(--border);}
+.cost-table{display:flex;flex-direction:column;gap:3px;margin-top:8px;}
+.cost-row{display:grid;grid-template-columns:1fr 160px 90px;align-items:center;gap:20px;padding:20px 28px;background:rgba(19,90,92,0.18);border-left:3px solid transparent;transition:background .2s,border-color .2s;}
+.cost-row:hover{background:rgba(8,177,158,0.08);border-left-color:var(--teal);}
+.cost-row.top{background:rgba(8,177,158,0.1);border-left-color:var(--teal);}
+.cost-row.total{background:rgba(250,226,166,0.08);border-left-color:var(--gold);margin-top:3px;}
+.cost-name{font-size:17px;font-weight:400;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.badge{font-size:10px;font-weight:700;letter-spacing:1px;padding:3px 9px;background:rgba(231,76,60,0.2);color:var(--red);border-radius:3px;}
+.cost-bar-wrap{height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+.cost-bar{height:100%;background:var(--teal);border-radius:2px;width:0;transition:width 1.1s ease;}
+.cost-val{font-size:19px;font-weight:700;color:var(--gold);text-align:right;font-variant-numeric:tabular-nums;}
+.cost-row.total .cost-val{font-size:22px;color:var(--cream);}
+.cost-row.total .cost-name{font-weight:700;}
+@media(max-width:580px){.cost-row{grid-template-columns:1fr 80px;}.cost-bar-wrap{display:none;}}
+
+/* ══ PRICES ══ */
+#prices{background:var(--dark);border-top:1px solid var(--border);}
+.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:3px;margin-top:8px;}
+@media(max-width:640px){.price-grid{grid-template-columns:1fr 1fr;}}
+.pcard{padding:32px 24px;background:rgba(6,48,54,0.8);border:1px solid rgba(8,177,158,0.1);display:flex;flex-direction:column;gap:10px;}
+.pcard.peak{background:rgba(250,226,166,0.06);border-color:rgba(250,226,166,0.15);}
+.pcard.low{background:rgba(231,76,60,0.06);border-color:rgba(231,76,60,0.15);}
+.pcard.proj{background:rgba(231,76,60,0.04);border:1px dashed rgba(231,76,60,0.25);}
+.pcard-year{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;}
+.pcard-val{font-size:clamp(32px,4.5vw,52px);font-weight:900;line-height:1;}
+.pcard.peak .pcard-val{color:var(--gold);}
+.pcard.low .pcard-val,.pcard.proj .pcard-val{color:var(--red);}
+.pcard:not(.peak):not(.low):not(.proj) .pcard-val{color:var(--cream);}
+.pcard-note{font-size:14px;font-weight:300;color:var(--dim);line-height:1.6;}
+.proj-arrow{font-size:26px;font-weight:900;color:var(--red);margin-bottom:-4px;}
+.drop-pill{display:inline-flex;flex-direction:column;align-items:center;padding:16px 24px;background:rgba(231,76,60,0.1);border:1px solid rgba(231,76,60,0.2);margin-top:24px;align-self:flex-start;}
+.drop-pct{font-size:38px;font-weight:900;color:var(--red);line-height:1;}
+.drop-lbl{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-top:4px;}
+
+/* ══ MARGIN ══ */
+#margin{background:rgba(6,48,54,0.95);border-top:1px solid rgba(231,76,60,0.15);}
+.margin-hero{text-align:center;margin-bottom:56px;}
+.margin-number{font-size:clamp(80px,16vw,160px);font-weight:900;color:var(--red);line-height:1;}
+.margin-unit{font-size:20px;font-weight:300;color:var(--muted);letter-spacing:2px;margin-bottom:16px;}
+.margin-stmt{font-size:28px;font-weight:700;color:var(--cream);}
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;margin-bottom:24px;}
+@media(max-width:520px){.compare-grid{grid-template-columns:1fr;}}
+.cbox{padding:24px 22px;background:rgba(19,90,92,0.2);display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.cbox.neg{background:rgba(231,76,60,0.08);border-left:4px solid var(--red);}
+.cbox-lbl{font-size:15px;color:var(--dim);font-weight:400;}
+.cbox-val{font-size:24px;font-weight:800;color:var(--gold);}
+.cbox.neg .cbox-val{color:var(--red);}
+.swing{font-size:15px;color:var(--muted);text-align:center;font-weight:500;letter-spacing:1px;}
+
+/* ══ TWIST ══ */
+#twist{background:var(--dark2);border-top:1px solid var(--border);}
+.twist-lines{margin-bottom:48px;}
+.twist-line{font-size:clamp(34px,5.5vw,56px);font-weight:800;line-height:1.25;color:var(--cream);}
+.twist-line.gold{color:var(--gold);font-weight:900;font-size:clamp(38px,6.5vw,64px);}
+.twist-body{font-size:19px;font-weight:300;color:var(--dim);line-height:1.85;max-width:680px;border-left:3px solid var(--teal);padding-left:28px;}
+
+/* ══ SACKS ══ */
+#sacks{background:var(--dark);border-top:1px solid var(--border);}
+.stbl{width:100%;border-collapse:collapse;margin-top:8px;}
+.stbl th{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;text-align:left;padding:14px 24px;border-bottom:1px solid rgba(8,177,158,0.18);}
+.stbl th:last-child{text-align:right;}
+.stbl td{padding:18px 24px;font-size:17px;border-bottom:1px solid rgba(255,255,255,0.04);}
+.stbl tr:hover td{background:rgba(8,177,158,0.04);}
+.stbl tr.crit td{background:rgba(231,76,60,0.07);border-left:4px solid var(--red);font-weight:700;color:var(--red);}
+.stbl tr.avg td{background:rgba(8,177,158,0.07);border-left:4px solid var(--teal);font-weight:700;color:var(--teal);}
+.sv{text-align:right;font-weight:700;font-size:20px;color:var(--gold);}
+.stbl tr.crit .sv{color:var(--red);}
+.stbl tr.avg .sv{color:var(--teal);}
+.insight{margin-top:20px;padding:24px 28px;background:rgba(250,226,166,0.06);border-left:4px solid var(--gold);font-size:17px;color:var(--dim);line-height:1.85;}
+.insight strong{color:var(--gold);}
+
+/* SIMULATOR */
+.sim{background:rgba(19,90,92,0.15);border:1px solid var(--border);padding:36px;margin-top:36px;}
+.sim-title{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:24px;}
+.sim-inputs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:28px;}
+@media(max-width:480px){.sim-inputs{grid-template-columns:1fr;}}
+.sim-field label{display:block;font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.sim-field input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);color:var(--cream);font-family:'Montserrat',sans-serif;font-size:26px;font-weight:700;padding:14px 18px;outline:none;transition:border-color .2s;}
+.sim-field input:focus{border-color:var(--teal);}
+.sim-results{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;}
+@media(max-width:480px){.sim-results{grid-template-columns:1fr;}}
+.sr{background:rgba(255,255,255,0.03);padding:22px;text-align:center;}
+.sr-lbl{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:10px;}
+.sr-val{font-size:32px;font-weight:900;color:var(--gold);}
+.sr-val.neg{color:var(--red);}
+.sr-unit{font-size:12px;color:var(--muted);margin-top:5px;}
+
+/* ══ QUESTIONS ══ */
+#questions{background:var(--dark);border-top:1px solid var(--border);}
+.q-intro{font-size:22px;font-weight:700;color:var(--cream);line-height:1.55;margin-bottom:36px;max-width:680px;}
+.q-list{display:flex;flex-direction:column;gap:3px;margin-bottom:48px;}
+.q-item{display:flex;align-items:flex-start;gap:18px;padding:22px 26px;background:rgba(8,177,158,0.08);border-left:4px solid var(--teal);}
+.q-arrow{font-size:20px;font-weight:900;color:var(--teal);flex-shrink:0;margin-top:3px;}
+.q-text{font-size:19px;font-weight:400;color:var(--cream);line-height:1.5;}
+.q-end{font-size:24px;font-weight:700;color:var(--gold);line-height:1.55;}
+
+/* ══ CTA ══ */
+#cta{background:var(--dark);border-top:1px solid var(--border);text-align:center;}
+.cta-wrap{max-width:720px;margin:0 auto;}
+.cta-hl{font-size:clamp(34px,5.5vw,52px);font-weight:800;color:var(--cream);line-height:1.2;margin-bottom:18px;}
+.cta-hl em{color:var(--teal);font-style:normal;}
+.cta-body{font-size:19px;font-weight:300;color:var(--dim);line-height:1.85;margin-bottom:48px;}
+.cta-btn{display:inline-block;background:var(--teal);color:var(--dark);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:800;letter-spacing:3px;text-transform:uppercase;text-decoration:none;padding:20px 48px;transition:background .25s,transform .2s;margin-bottom:40px;}
+.cta-btn:hover{background:var(--gold);transform:translateY(-2px);}
+.cta-links{display:flex;justify-content:center;gap:48px;flex-wrap:wrap;}
+.cl-item{text-align:center;}
+.cl-label{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--muted);text-transform:uppercase;display:block;margin-bottom:6px;}
+.cl-url{font-size:17px;font-weight:700;color:var(--teal);text-decoration:none;}
+.cl-url.gold{color:var(--gold);}
+.cl-url:hover{text-decoration:underline;}
+
+/* FOOTER */
+footer{padding:36px 64px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);flex-wrap:wrap;gap:12px;}
+footer a{color:var(--teal);text-decoration:none;}
+footer a:hover{color:var(--gold);}
+@media(max-width:600px){footer{padding:28px;flex-direction:column;text-align:center;}}
+
+/* SOURCE NOTE */
+.src{margin-top:18px;font-size:11px;font-weight:600;letter-spacing:2px;color:rgba(8,177,158,0.35);text-transform:uppercase;}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-brand">
+    <img src="data:image/jpeg;base64,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" alt="FP">
+    <span>Fabricio Peres</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#costs">Costs</a></li>
+    <li><a href="#prices">Prices</a></li>
+    <li><a href="#margin">Margin</a></li>
+    <li><a href="#twist">The Twist</a></li>
+    <li><a href="#sacks">The Calculation</a></li>
+    <li><a href="#cta">Talk</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="inner">
+    <div class="hero-tag reveal">Brazilian Soybean Economics — 2025/26 Season · Aprosoja/MS</div>
+
+    <div class="eq-block reveal">
+      <div class="eq-row">
+        <span class="eq-label">Cost</span>
+        <span class="eq-number">$1,223</span>
+        <span class="eq-unit">/ hectare</span>
+      </div>
+      <div class="eq-divider"></div>
+      <div class="eq-row">
+        <span class="eq-label">Revenue</span>
+        <span class="eq-number red">$24</span>
+        <span class="eq-unit">/ sack</span>
+      </div>
+    </div>
+
+    <div class="hero-verdict reveal">The math barely works.</div>
+    <div class="hero-sub reveal">An analysis of why the Brazilian farmer's spreadsheet is the only metric that matters for any regenerative solution entering Brazil.</div>
+  </div>
+  <div class="scroll-hint">Scroll to explore</div>
+</section>
+
+<!-- COSTS -->
+<section id="costs">
+  <div class="inner">
+    <div class="eyebrow reveal">01 — Cost Structure</div>
+    <div class="reveal" style="font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.2;margin-bottom:14px">Where every dollar goes<br>before harvest.</div>
+    <div class="reveal" style="font-size:17px;color:var(--dim);font-weight:300;margin-bottom:36px">Production cost per hectare — Mato Grosso do Sul. USD at R$5.00/USD, May 2026.</div>
+
+    <div class="cost-table reveal">
+      <div class="cost-row top">
+        <div class="cost-name">Fertilizers <span class="badge">↑ 24.1%</span></div>
+        <div class="cost-bar-wrap"><div class="cost-bar" data-w="100"></div></div>
+        <div class="cost-val">$279</div>
+      </div>
+      <div class="cost-row">
+        <div class="cost-name">Seeds, treatment & soil correction</div>
+        <div class="cost-bar-wrap"><div class="cost-bar" data-w="66"></div></div>
+        <div class="cost-val">$184</div>
+      </div>
+      <div class="cost-row">
+        <div class="cost-name">Pesticides (fungicides, herbicides, insecticides)</div>
+        <div class="cost-bar-wrap"><div class="cost-bar" data-w="69"></div></div>
+        <div class="cost-val">$192</div>
+      </div>
+      <div class="cost-row">
+        <div class="cost-name">Mechanized operations</div>
+        <div class="cost-bar-wrap"><div class="cost-bar" data-w="13"></div></div>
+        <div class="cost-val">$36</div>
+      </div>
+      <div class="cost-row">
+        <div class="cost-name">Insurance, transport, admin & depreciation</div>
+        <div class="cost-bar-wrap"><div class="cost-bar" data-w="100" style="background:var(--dim)"></div></div>
+        <div class="cost-val">$414</div>
+      </div>
+      <div class="cost-row total">
+        <div class="cost-name">Total cost per hectare</div>
+        <div class="cost-bar-wrap"><div class="cost-bar" data-w="100" style="background:var(--gold)"></div></div>
+        <div class="cost-val">$1,223</div>
+      </div>
+    </div>
+    <div class="src reveal">Source: Aprosoja/MS — Boletim Econômico Safra 2025/26</div>
+  </div>
+</section>
+
+<!-- PRICES -->
+<section id="prices">
+  <div class="inner">
+    <div class="eyebrow reveal">02 — Revenue Collapse</div>
+    <div class="reveal" style="font-size:clamp(30px,5vw,46px);font-weight:800;line-height:1.2;margin-bottom:14px">The price the farmer<br>actually receives.</div>
+    <div class="reveal" style="font-size:17px;color:var(--dim);font-weight:300;margin-bottom:36px">Soybean prices per 60kg sack — Cepea/Paranaguá — USD equivalent at R$5.00/USD.</div>
+
+    <div class="price-grid reveal">
+      <div class="pcard peak">
+        <div class="pcard-year">2022</div>
+        <div class="pcard-val">~$50</div>
+        <div class="pcard-note">Peak driven by Ukraine war disrupting global commodity markets.</div>
+      </div>
+      <div class="pcard">
+        <div class="pcard-year">2023</div>
+        <div class="pcard-val" style="font-size:clamp(26px,3.5vw,40px);color:var(--cream)">$27–$40</div>
+        <div class="pcard-note">Crashed 33% through the year. Argentine supersafra flooded global supply.</div>
+      </div>
+      <div class="pcard low">
+        <div class="pcard-year">2024</div>
+        <div class="pcard-val" style="font-size:clamp(26px,3.5vw,40px)">$23–$29</div>
+        <div class="pcard-note">Lowest nominal average since 2020. Second consecutive year of decline.</div>
+      </div>
+      <div class="pcard proj">
+        <div class="proj-arrow">↓</div>
+        <div class="pcard-year">2025/26</div>
+        <div class="pcard-val">~$24</div>
+        <div class="pcard-note">Aprosoja/MS reference price R$120/sc = $24. Still near multi-year lows.</div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:24px">
+      <div class="drop-pill">
+        <div class="drop-pct">−52%</div>
+        <div class="drop-lbl">Since 2022 peak</div>
+      </div>
+    </div>
+    <div class="src reveal" style="margin-top:18px">Source: Cepea/Esalq-USP Paranaguá</div>
+  </div>
+</section>
+
+<!-- MARGIN -->
+<section id="margin">
+  <div class="inner">
+    <div class="eyebrow reveal">03 — The Margin Reality</div>
+
+    <div class="margin-hero reveal">
+      <div class="margin-number">2 sc</div>
+      <div class="margin-unit">of margin per hectare</div>
+      <div class="margin-stmt">The farmer produces 53. Needs 51 to break even.</div>
+    </div>
+
+    <div class="compare-grid reveal">
+      <div class="cbox">
+        <span class="cbox-lbl">Average productivity</span>
+        <span class="cbox-val">53 sc/ha</span>
+      </div>
+      <div class="cbox neg">
+        <span class="cbox-lbl">Break-even (total costs)</span>
+        <span class="cbox-val">51 sc/ha</span>
+      </div>
+    </div>
+    <div class="swing reveal">At R$110/sack — which happened in 2024 — margin turns negative.</div>
+
+    <div class="reveal" style="margin-top:28px;font-size:17px;color:var(--dim);line-height:1.85;max-width:680px">
+      Two sacks of margin. That is the financial context in which every input decision, every new technology, and every regenerative solution pitch gets evaluated. There is almost no room for financial risk he cannot quantify.
+    </div>
+  </div>
+</section>
+
+<!-- TWIST -->
+<section id="twist">
+  <div class="inner">
+    <div class="eyebrow reveal">04 — The Twist</div>
+    <div class="twist-lines reveal">
+      <div class="twist-line">The farmer doesn't think</div>
+      <div class="twist-line">in dollars.</div>
+      <div class="twist-line">He doesn't think in reais.</div>
+      <div class="twist-line gold">He thinks in sacks.</div>
+    </div>
+    <div class="twist-body reveal">
+      Those dollar figures are how the problem looks from the outside. From inside a Brazilian farm, every decision is made in one unit only: the sack. How many sacks does this cost? How many does it save or generate? That is the only calculation that survives contact with the field.
+    </div>
+  </div>
+</section>
+
+<!-- SACKS -->
+<section id="sacks">
+  <div class="inner">
+    <div class="eyebrow reveal">05 — The Sack Calculation</div>
+    <div class="reveal" style="font-size:clamp(28px,4.5vw,44px);font-weight:800;line-height:1.2;margin-bottom:14px">Break-even in sacks.<br>Mato Grosso do Sul reference.</div>
+    <div class="reveal" style="font-size:17px;color:var(--dim);font-weight:300;margin-bottom:32px">This is the model the farmer runs before any purchase decision. At R$120/sack = $24/sack.</div>
+
+    <table class="stbl reveal">
+      <thead>
+        <tr><th>Cost line</th><th style="text-align:right">Sacks required / ha</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Fertilizers only</td><td class="sv">11.6 sc</td></tr>
+        <tr><td>Seeds, treatment & soil correction</td><td class="sv">7.7 sc</td></tr>
+        <tr><td>Pesticides (F + H + I)</td><td class="sv">8.0 sc</td></tr>
+        <tr><td>Operations, admin & depreciation</td><td class="sv">18.7 sc</td></tr>
+        <tr class="crit"><td>Break-even (total cost)</td><td class="sv">51.0 sc</td></tr>
+        <tr class="avg"><td>Average productivity — Aprosoja/MS</td><td class="sv">53.0 sc</td></tr>
+      </tbody>
+    </table>
+
+    <div class="insight reveal">
+      The average farmer produces <strong>53 sacks/ha</strong>. Total break-even requires <strong>51 sacks</strong>. That leaves <strong>2 sacks of margin — ~$48/ha</strong> — before any new technology investment. At 2024 prices (R$110/sc), that margin turns negative.
+    </div>
+
+    <div class="sim reveal">
+      <div class="sim-title">Scenario Simulator</div>
+      <div class="sim-inputs">
+        <div class="sim-field">
+          <label>Productivity (sacks/ha)</label>
+          <input type="number" id="prod" value="53" min="20" max="120" oninput="calc()">
+        </div>
+        <div class="sim-field">
+          <label>Sack price (R$)</label>
+          <input type="number" id="price" value="120" min="60" max="250" step="5" oninput="calc()">
+        </div>
+      </div>
+      <div class="sim-results">
+        <div class="sr">
+          <div class="sr-lbl">Gross Revenue</div>
+          <div class="sr-val" id="rev">R$6,360</div>
+          <div class="sr-unit">per hectare</div>
+        </div>
+        <div class="sr">
+          <div class="sr-lbl">Total Cost</div>
+          <div class="sr-val">R$6,116</div>
+          <div class="sr-unit">per hectare</div>
+        </div>
+        <div class="sr">
+          <div class="sr-lbl">Net Margin</div>
+          <div class="sr-val" id="marg">+R$244</div>
+          <div class="sr-unit">per hectare</div>
+        </div>
+      </div>
+    </div>
+    <div class="src reveal" style="margin-top:18px">Source: Aprosoja/MS Boletim 2025/26 · CNA/Cepea Campo Futuro</div>
+  </div>
+</section>
+
+<!-- QUESTIONS -->
+<section id="questions">
+  <div class="inner">
+    <div class="eyebrow reveal">06 — The Farmer's Filter</div>
+    <div class="q-intro reveal">When a regenerative solution enters Brazil, the farmer evaluates it against three questions. Every pitch. Every time.</div>
+
+    <div class="q-list reveal">
+      <div class="q-item">
+        <div class="q-arrow">→</div>
+        <div class="q-text">Does this reduce my fertilizer bill?</div>
+      </div>
+      <div class="q-item">
+        <div class="q-arrow">→</div>
+        <div class="q-text">Does this protect my yield during transition?</div>
+      </div>
+      <div class="q-item">
+        <div class="q-arrow">→</div>
+        <div class="q-text">Can I defend this to my bank in sacks per hectare?</div>
+      </div>
+    </div>
+
+    <div class="q-end reveal">If the answer is unclear, the pilot runs once.<br>And dies before the second cycle.</div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="cta">
+  <div class="inner">
+    <div class="cta-wrap">
+      <div class="eyebrow reveal" style="justify-content:center">07 — The Translation Problem</div>
+      <div class="cta-hl reveal">Is your solution in<br>the farmer's <em>sack calculation?</em></div>
+      <div class="cta-body reveal">
+        Most regenerative solutions don't fail in the lab.<br>
+        They fail between R&D and the field.<br>
+        The science travels. The commercial model has to be rebuilt for every market it lands in.
+      </div>
+      <div class="reveal">
+        <a href="https://calendly.com/faperes/30min" target="_blank" class="cta-btn"
+           onclick="gtag('event','cta_click',{event_category:'engagement',event_label:'calendly'})">
+          Let's talk about your value proposition →
+        </a>
+      </div>
+      <div class="cta-links reveal">
+        <div class="cl-item">
+          <span class="cl-label">Newsletter</span>
+          <a href="https://faperes.substack.com" target="_blank" class="cl-url gold">faperes.substack.com</a>
+        </div>
+        <div class="cl-item">
+          <span class="cl-label">Book a call</span>
+          <a href="https://calendly.com/faperes/30min" target="_blank" class="cl-url">calendly.com/faperes/30min</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="data:image/jpeg;base64,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" alt="FP" style="width:32px;height:32px;border-radius:2px">
+    <span>© 2026 Fabricio Peres — Strategic Advisor</span>
+  </div>
+  <div>Data: <a href="https://aprosojams.org.br" target="_blank">Aprosoja/MS</a> · Cepea/Esalq · CNA · May 2026</div>
+</footer>
+
+<script>
+// Scroll reveal + bar animation
+const obs = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      e.target.querySelectorAll('.cost-bar[data-w]').forEach(b=>{b.style.width=b.dataset.w+'%';});
+    }
+  });
+},{threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Simulator — in Reais to match source
+function calc(){
+  const prod  = parseFloat(document.getElementById('prod').value)||0;
+  const price = parseFloat(document.getElementById('price').value)||0;
+  const cost  = 6116;
+  const rev   = prod*price;
+  const marg  = rev-cost;
+  document.getElementById('rev').textContent = 'R$'+rev.toLocaleString('pt-BR',{maximumFractionDigits:0});
+  const m=document.getElementById('marg');
+  if(marg>=0){
+    m.textContent='+R$'+marg.toLocaleString('pt-BR',{maximumFractionDigits:0});
+    m.className='sr-val';
+  } else {
+    m.textContent='−R$'+Math.abs(marg).toLocaleString('pt-BR',{maximumFractionDigits:0});
+    m.className='sr-val neg';
+  }
+  gtag('event','simulator_use',{event_category:'engagement',value:Math.round(marg)});
+}
+calc();
+</script>
+</body>
+</html>
